@@ -32,6 +32,25 @@ namespace myTiles {
 2 . . . . . . . . . . . . . . . . . . 2 
 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
 `, [myTiles.transparency16,sprites.builtin.forestTiles0,sprites.castle.tilePath1,sprites.castle.tilePath7,sprites.castle.tilePath9,sprites.castle.tilePath3,sprites.castle.tilePath2,sprites.castle.tilePath5,sprites.castle.tilePath4,sprites.castle.tilePath8,sprites.castle.tilePath6], TileScale.Sixteen);
+            case "level3":
+            case "level3":return tiles.createTilemap(hex`10001000010101010101010101010101010101010102040404040404040404040b07050101030d0d0d0d0d0d0d0d0d0a0907070101030d0d0d0d0d0d0d0d0c0707020b0101030d0d0d0d0d0d0d0d0c0705030c0101030d0d0d0d0d0d0d0d0d04040d0c0101030d0d0d0d0d0d0d0d0d0d0d0d0c0101030d0d0d0d0d0d0d0d0d0d0d0d0c0101030d0a0d0d0d0d0d0d0d0d0d0d0c0101080907030d0d0d0d0d0d0d0d0d0c0101050707080d0d0d0d0d0d0d0d0d0c010107070707080a0d0d0d0d0d0d0d0c0101070607070707030d0d0d0d0d0d0c01010707060507020d0d0d0d0d0d0d0c01010507070707080a0a0a0a0a0a0a090101010101010101010101010101010101`, img`
+2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 . . . . . . . . . . . . . . 2 
+2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
+`, [myTiles.transparency16,sprites.builtin.forestTiles0,sprites.castle.tilePath1,sprites.castle.tilePath4,sprites.castle.tilePath2,sprites.castle.tileGrass2,sprites.castle.tileGrass3,sprites.castle.tileGrass1,sprites.castle.tilePath7,sprites.castle.tilePath9,sprites.castle.tilePath8,sprites.castle.tilePath3,sprites.castle.tilePath6,sprites.castle.tilePath5], TileScale.Sixteen);
         }
         return null;
     })
