@@ -30,6 +30,9 @@ function playerGotHit (sprite: Sprite) {
     }
     sprite.setFlag(SpriteFlag.GhostThroughSprites, false)
 }
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    facing = 0
+})
 function declareValues () {
     static_image_ghost = [img`
         ........................
@@ -601,6 +604,8 @@ function declareValues () {
     player_dead = false
     info.setLife(3)
     info.setScore(0)
+    facing = 1
+    PreviousDirectionButton = 1
 }
 function distanceBetween2Sprites (sprite1: Sprite, sprite2: Sprite) {
     return Math.sqrt((sprite1.x - sprite2.x) * (sprite1.x - sprite2.x) + (sprite1.y - sprite2.y) * (sprite1.y - sprite2.y))
@@ -629,6 +634,20 @@ function initializePlayer () {
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     swingSword()
+})
+controller.down.onEvent(ControllerButtonEvent.Released, function () {
+    if (controller.left.isPressed()) {
+        facing = 2
+    } else if (controller.right.isPressed()) {
+        facing = 3
+    } else if (controller.up.isPressed()) {
+        facing = 0
+    } else if (controller.down.isPressed()) {
+        facing = 1
+    }
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    facing = 2
 })
 function ghostFireSpit () {
     for (let this_ghost of sprites.allOfKind(SpriteKind.Spectre)) {
@@ -720,6 +739,28 @@ function ghostFireSpit () {
         pause(randint(0, 100))
     }
 }
+controller.right.onEvent(ControllerButtonEvent.Released, function () {
+    if (controller.left.isPressed()) {
+        facing = 2
+    } else if (controller.right.isPressed()) {
+        facing = 3
+    } else if (controller.up.isPressed()) {
+        facing = 0
+    } else if (controller.down.isPressed()) {
+        facing = 1
+    }
+})
+controller.left.onEvent(ControllerButtonEvent.Released, function () {
+    if (controller.left.isPressed()) {
+        facing = 2
+    } else if (controller.right.isPressed()) {
+        facing = 3
+    } else if (controller.up.isPressed()) {
+        facing = 0
+    } else if (controller.down.isPressed()) {
+        facing = 1
+    }
+})
 function makeGhost () {
     ghost = sprites.create(static_image_ghost[1], SpriteKind.Spectre)
     tiles.placeOnRandomTile(ghost, sprites.castle.tilePath5)
@@ -735,9 +776,23 @@ function makeGhost () {
     ghost.setBounceOnWall(false)
     moveGhost(ghost, this_ghost_index)
 }
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    facing = 3
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite, otherSprite) {
     otherSprite.destroy()
     playerGotHit(sprite)
+})
+controller.up.onEvent(ControllerButtonEvent.Released, function () {
+    if (controller.left.isPressed()) {
+        facing = 2
+    } else if (controller.right.isPressed()) {
+        facing = 3
+    } else if (controller.up.isPressed()) {
+        facing = 0
+    } else if (controller.down.isPressed()) {
+        facing = 1
+    }
 })
 sprites.onOverlap(SpriteKind.Sword, SpriteKind.Spectre, function (sprite, otherSprite) {
     playerStabsSpectre(otherSprite)
@@ -769,6 +824,9 @@ function moveGhost (this_ghost1: Sprite, this_ghost_index1: number) {
     }
     ghost_facing[this_ghost_index1] = randint(0, 3)
 }
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    facing = 1
+})
 info.onLifeZero(function () {
     player_dead = true
     game.over(false)
@@ -832,20 +890,16 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Spectre, function (sprite, other
     playerGotHit(sprite)
 })
 function setPlayerFacing () {
-    if (mySprite.vy < 0) {
-        facing = 0
+    if (facing == 0) {
         sword.bottom = mySprite.top
         sword.x = mySprite.x
-    } else if (mySprite.vy > 0) {
-        facing = 1
+    } else if (facing == 1) {
         sword.top = mySprite.bottom - 4
         sword.x = mySprite.x
-    } else if (mySprite.vx < 0) {
-        facing = 2
+    } else if (facing == 2) {
         sword.right = mySprite.left + 4
         sword.y = mySprite.y
-    } else if (mySprite.vx > 0) {
-        facing = 3
+    } else if (facing == 3) {
         sword.left = mySprite.right - 4
         sword.y = mySprite.y
     }
@@ -861,10 +915,10 @@ let this_ghost_facing = 0
 let sword: Sprite = null
 let mySprite: Sprite = null
 let index = 0
+let PreviousDirectionButton = 0
 let player_dead = false
 let kill_count = 0
 let swingingSword = false
-let facing = 0
 let ghost_shoot_interval = 0
 let ghost_movement_interval = 0
 let ghost_ready_to_fire: number[] = []
@@ -872,6 +926,7 @@ let animation_ghost: Image[][] = []
 let static_image_sword: Image[] = []
 let static_image_hero: Image[] = []
 let static_image_ghost: Image[] = []
+let facing = 0
 let ghost_facing: number[] = []
 let this_ghost_index = 0
 tiles.setTilemap(tilemap`level2`)
