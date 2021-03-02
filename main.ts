@@ -224,6 +224,104 @@ function declareValues () {
         . . . . . . f f f f f f . . . . 
         . . . . . . . f f f . . . . . . 
         `]
+    static_image_hero_feet = [img`
+        . . . . . e e e e e e . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 4 4 4 4 4 4 . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f . . . f f . . . . . 
+        `, img`
+        . . . . . e 4 4 4 4 e . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 4 4 5 5 4 4 . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f . . . f f . . . . . 
+        `, img`
+        . . . . . 4 4 4 e e f . . . . . 
+        . . . . . 2 2 e d d 4 . . . . . 
+        . . . . . 2 2 e d d e . . . . . 
+        . . . . . 5 4 f e e f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . . f f f f . . . . . . 
+        `, img`
+        . . . . . f e e 4 4 4 . . . . . 
+        . . . . . 4 d d e 2 2 . . . . . 
+        . . . . . e d d e 2 2 . . . . . 
+        . . . . . f e e f 4 5 . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        `]
+    static_image_hero_body = [img`
+        . . . . . . f f f f . . . . . . 
+        . . . . f f e e e e f f . . . . 
+        . . . f e e e f f e e e f . . . 
+        . . f f f f f 2 2 f f f f f . . 
+        . . f f e 2 e 2 2 e 2 e f f . . 
+        . . f e 2 f 2 f f 2 f 2 e f . . 
+        . . f f f 2 2 e e 2 2 f f f . . 
+        . f f e f 2 f e e f 2 f e f f . 
+        . f e e f f e e e e f e e e f . 
+        . . f e e e e e e e e e e f . . 
+        . . . f e . . . . . . e f . . . 
+        . . e 4 f . . . . . . f 4 e . . 
+        . . 4 d f . . . . . . f d 4 . . 
+        . . 4 4 f . . . . . . f 4 4 . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, img`
+        . . . . . . f f f f . . . . . . 
+        . . . . f f f 2 2 f f f . . . . 
+        . . . f f f 2 2 2 2 f f f . . . 
+        . . f f f e e e e e e f f f . . 
+        . . f f e 2 2 2 2 2 2 e e f . . 
+        . . f e 2 f f f f f f 2 e f . . 
+        . . f f f f e e e e f f f f . . 
+        . f f e f b f 4 4 f b f e f f . 
+        . f e e 4 1 f d d f 1 4 e e f . 
+        . . f e e d d d d d d e e f . . 
+        . . . f e . . . . . . e f . . . 
+        . . e 4 f . . . . . . f 4 e . . 
+        . . 4 d f . . . . . . f d 4 . . 
+        . . 4 4 f . . . . . . f 4 4 . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, img`
+        . . . . f f f f f f . . . . . . 
+        . . . f 2 f e e e e f f . . . . 
+        . . f 2 2 2 f e e e e f f . . . 
+        . . f e e e e f f e e e f . . . 
+        . f e 2 2 2 2 e e f f f f . . . 
+        . f 2 e f f f f 2 2 2 e f . . . 
+        . f f f e e e f f f f f f f . . 
+        . f e e 4 4 f b e 4 4 e f f . . 
+        . . f e d d f 1 4 d 4 e e f . . 
+        . . . f d d d d 4 e e e f . . . 
+        . . . f e . . . . . . f . . . . 
+        . . . f 2 . . . . . . . . . . . 
+        . . . f 2 . . . . . . . . . . . 
+        . . . f 5 . . . . . . . . . . . 
+        . . . . f . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, img`
+        . . . . . . f f f f f f . . . . 
+        . . . . f f e e e e f 2 f . . . 
+        . . . f f e e e e f 2 2 2 f . . 
+        . . . f e e e f f e e e e f . . 
+        . . . f f f f e e 2 2 2 2 e f . 
+        . . . f e 2 2 2 f f f f e 2 f . 
+        . . f f f f f f f e e e f f f . 
+        . . f f e 4 4 e b f 4 4 e e f . 
+        . . f e e 4 d 4 1 f d d e f . . 
+        . . . f e e e 4 d d d d f . . . 
+        . . . . f . . . . . . e f . . . 
+        . . . . . . . . . . . 2 f . . . 
+        . . . . . . . . . . . 2 f . . . 
+        . . . . . . . . . . . 5 f . . . 
+        . . . . . . . . . . . f . . . . 
+        . . . . . . . . . . . . . . . . 
+        `]
     static_image_sword = [img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
@@ -1222,21 +1320,29 @@ function playerStabsSpectre (sprite: Sprite) {
     }
 }
 function initializePlayer () {
-    mySprite = sprites.create(static_image_hero[1], SpriteKind.Player)
+    mySprite = sprites.create(static_image_hero_feet[1], SpriteKind.Player)
+    mySpriteBodyAndHead = sprites.create(static_image_hero_body[1], SpriteKind.Player)
     sword = sprites.create(static_image_sword[4], SpriteKind.Sword)
+    mySpriteBodyAndHead.bottom = mySprite.top + 6
+    mySpriteBodyAndHead.x = mySprite.x
+    mySpriteBodyAndHead.setFlag(SpriteFlag.GhostThroughWalls, true)
+    mySprite.z += 30
+    mySpriteBodyAndHead.z += 30
     tiles.placeOnTile(mySprite, tiles.getTileLocation(1, 1))
     scene.cameraFollowSprite(mySprite)
     sword.top = mySprite.bottom - 4
     sword.x = mySprite.x
-    controller.moveSprite(mySprite)
+    controller.moveSprite(mySprite, 80, 80)
     mySprite.setFlag(SpriteFlag.Ghost, false)
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     swingSword()
 })
 scene.onOverlapTile(SpriteKind.Player, tiles.util.door0, function (sprite, location) {
-    tiles.loadConnectedMap(ConnectionKind.Door1)
-    roomChange(tiles.util.door0)
+    if (sprite == mySprite) {
+        tiles.loadConnectedMap(ConnectionKind.Door1)
+        roomChange(tiles.util.door0)
+    }
 })
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     if (controller.left.isPressed()) {
@@ -1393,27 +1499,11 @@ function roomChange (doorType: Image) {
     DestroyAllTheThings()
     tiles.placeOnRandomTile(mySprite, doorType)
     if (tiles.getLoadedMap() == map_field) {
-        cave_entrance = sprites.create(img`
-            d d d d d d d d d d d d d d d d 
-            d d d 1 1 d d d d d d d d b d d 
-            d d d 1 f 4 f f f 4 f d d d d d 
-            d d d f f 4 4 4 4 4 f f d d d d 
-            d d f f f 4 f f f 4 f f f d d d 
-            d d f f f 4 4 4 4 4 f f f d d d 
-            d d f f f e f f f 4 f f f d d d 
-            d d f f f e e e e e f f f d d d 
-            d d f f f e f f f e f f f d d d 
-            d d f f f e e e e e f f f d d d 
-            d d f f f e f f f e f f f d d d 
-            1 1 d f f f f f f f f f d d d d 
-            1 1 d d f f f f f f f d b d d d 
-            d d d d d d 1 d d d d d d d d d 
-            d d d d d d d d d d d d d d d d 
-            d d d d d d d d d d d d d d b d 
-            `, SpriteKind.Building)
-        tiles.placeOnRandomTile(cave_entrance, tiles.util.door0)
+        scene.setBackgroundColor(7)
         mySprite.y += 16
+        tiles.coverAllTiles(tiles.util.door0, assets.tile`myTile25`)
     } else if (tiles.getLoadedMap() == map_cave1) {
+        scene.setBackgroundColor(15)
         makeBats()
         mySprite.y += -16
         tiles.coverAllTiles(tiles.util.door0, assets.tile`myTile9`)
@@ -1433,7 +1523,7 @@ function makeBats () {
     for (let index2 = 0; index2 < 10; index2++) {
         bat = sprites.create(static_image_bat, SpriteKind.Bat)
         tiles.placeOnRandomTile(bat, assets.tile`myTile10`)
-        mySprite.setBounceOnWall(true)
+        bat.setBounceOnWall(true)
         while (distanceBetween2Sprites(mySprite, bat) < 64) {
             tiles.placeOnRandomTile(bat, assets.tile`myTile10`)
             if (player_dead == true) {
@@ -1536,9 +1626,11 @@ function swingSword () {
     if (hasSword == 1 && !(swingingSword)) {
         swingingSword = true
         sword.setImage(static_image_sword[facing])
+        pause(200)
+        sword.setImage(static_image_sword[4])
+    } else if (hasSword == 0) {
+        mySprite.say("I have no weapon", 800)
     }
-    pause(200)
-    sword.setImage(static_image_sword[4])
 }
 function moveGhost (this_ghost1: Sprite, this_ghost_index1: number) {
     this_ghost_facing = ghost_facing[this_ghost_index1]
@@ -1600,25 +1692,8 @@ function initializeTilemaps () {
     map_cave1 = tiles.createMap(tilemap`level9`)
     tiles.connectMapById(map_field, map_cave1, ConnectionKind.Door1)
     tiles.loadMap(map_field)
-    cave_entrance = sprites.create(img`
-        d d d d d d d d d d d d d d d d 
-        d d d 1 1 d d d d d d d d b d d 
-        d d d 1 f 4 f f f 4 f d d d d d 
-        d d d f f 4 4 4 4 4 f f d d d d 
-        d d f f f 4 f f f 4 f f f d d d 
-        d d f f f 4 4 4 4 4 f f f d d d 
-        d d f f f e f f f 4 f f f d d d 
-        d d f f f e e e e e f f f d d d 
-        d d f f f e f f f e f f f d d d 
-        d d f f f e e e e e f f f d d d 
-        d d f f f e f f f e f f f d d d 
-        1 1 d f f f f f f f f f d d d d 
-        1 1 d d f f f f f f f d b d d d 
-        d d d d d d 1 d d d d d d d d d 
-        d d d d d d d d d d d d d d d d 
-        d d d d d d d d d d d d d d b d 
-        `, SpriteKind.Building)
-    tiles.placeOnRandomTile(cave_entrance, tiles.util.door0)
+    tiles.coverAllTiles(tiles.util.door0, assets.tile`myTile25`)
+    scene.setBackgroundColor(7)
 }
 scene.onHitWall(SpriteKind.Spectre, function (sprite, location) {
     ghostChangeDirectionOnWallHit(sprite)
@@ -1669,19 +1744,23 @@ function DestroyAllTheThings () {
 }
 function setPlayerFacing () {
     if (facing == 0) {
-        sword.bottom = mySprite.top
+        sword.bottom = mySpriteBodyAndHead.top - 1
         sword.x = mySprite.x
     } else if (facing == 1) {
-        sword.top = mySprite.bottom - 4
+        sword.top = mySprite.bottom - 5
         sword.x = mySprite.x
     } else if (facing == 2) {
         sword.right = mySprite.left + 4
-        sword.y = mySprite.y
+        sword.y = mySprite.y - 4
     } else if (facing == 3) {
         sword.left = mySprite.right - 4
-        sword.y = mySprite.y
+        sword.y = mySprite.y - 4
     }
     mySprite.setImage(static_image_hero[facing])
+    mySprite.setImage(static_image_hero_feet[facing])
+    mySpriteBodyAndHead.setImage(static_image_hero_body[facing])
+    mySpriteBodyAndHead.bottom = mySprite.top + 6
+    mySpriteBodyAndHead.x = mySprite.x
     if (sword.image != static_image_sword[4]) {
         sword.setImage(static_image_sword[facing])
     }
@@ -1691,6 +1770,7 @@ sprites.onOverlap(SpriteKind.Sword, SpriteKind.Bat, function (sprite, otherSprit
 })
 function treasureChest () {
     if (hasSword == 0 && tiles.getLoadedMap() == map_cave1) {
+        hasSword = 1
         mySprite2 = sprites.create(img`
             ..............................................................................................................
             ..............................................................................................................
@@ -1736,7 +1816,6 @@ function treasureChest () {
         tiles.setTileAt(chestLocation, sprites.dungeon.chestOpen)
         mySprite2.setPosition(scene.cameraProperty(CameraProperty.X) + 8, scene.cameraProperty(CameraProperty.Y) - 46)
         game.splash("A sword!", "It's not very sharp..")
-        hasSword = 1
         mySprite2.destroy()
     }
 }
@@ -1744,13 +1823,13 @@ let this_ghost_ready_to_fire = 0
 let heart: Sprite = null
 let mySprite2: Sprite = null
 let bat: Sprite = null
-let cave_entrance: Sprite = null
 let map_cave1: tiles.WorldMap = null
 let map_field: tiles.WorldMap = null
 let chestLocation: tiles.Location = null
 let ghost: Sprite = null
 let projectile: Sprite = null
 let sword: Sprite = null
+let mySpriteBodyAndHead: Sprite = null
 let mySprite: Sprite = null
 let index = 0
 let hasSword = 0
@@ -1763,6 +1842,8 @@ let animation_Bat: Image[][] = []
 let static_image_bat: Image = null
 let animation_ghost: Image[][] = []
 let static_image_sword: Image[] = []
+let static_image_hero_body: Image[] = []
+let static_image_hero_feet: Image[] = []
 let static_image_hero: Image[] = []
 let static_image_ghost: Image[] = []
 let facing = 0
@@ -1784,7 +1865,7 @@ forever(function () {
 })
 forever(function () {
     if (tiles.getLoadedMap() == map_field) {
-        if (sprites.allOfKind(SpriteKind.Spectre).length < 6) {
+        if (sprites.allOfKind(SpriteKind.Spectre).length < 10) {
             makeGhost()
         }
     }
