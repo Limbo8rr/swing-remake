@@ -2,6 +2,7 @@ namespace SpriteKind {
     export const Sword = SpriteKind.create()
     export const Spectre = SpriteKind.create()
     export const Text = SpriteKind.create()
+    export const Building = SpriteKind.create()
 }
 function ghostChangeDirectionOnWallHit (sprite: Sprite) {
     this_ghost_index = sprites.allOfKind(SpriteKind.Spectre).indexOf(sprite)
@@ -606,7 +607,7 @@ function declareValues () {
     info.setLife(3)
     info.setScore(0)
     facing = 1
-    PreviousDirectionButton = 1
+    hasSword = 0
 }
 function distanceBetween2Sprites (sprite1: Sprite, sprite2: Sprite) {
     return Math.sqrt((sprite1.x - sprite2.x) * (sprite1.x - sprite2.x) + (sprite1.y - sprite2.y) * (sprite1.y - sprite2.y))
@@ -636,6 +637,10 @@ function initializePlayer () {
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     swingSword()
 })
+scene.onOverlapTile(SpriteKind.Player, tiles.util.door0, function (sprite, location) {
+    tiles.loadConnectedMap(ConnectionKind.Door1)
+    roomChange(tiles.util.door0)
+})
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     if (controller.left.isPressed()) {
         facing = 2
@@ -644,6 +649,9 @@ controller.down.onEvent(ControllerButtonEvent.Released, function () {
     } else if (controller.up.isPressed()) {
         facing = 0
     }
+})
+tiles.onMapLoaded(function (tilemap2) {
+	
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     facing = 2
@@ -771,6 +779,46 @@ function makeGhost () {
     ghost.setBounceOnWall(false)
     moveGhost(ghost, this_ghost_index)
 }
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.chestClosed, function (sprite, location) {
+    chestLocation = location
+    treasureChest()
+})
+function roomChange (doorType: Image) {
+    tiles.placeOnRandomTile(mySprite, doorType)
+    if (tiles.getLoadedMap() == map_field) {
+        cave_entrance = sprites.create(img`
+            d d d d d d d d d d d d d d d d 
+            d d d 1 1 d d d d d d d d b d d 
+            d d d 1 f 4 f f f 4 f d d d d d 
+            d d d f f 4 4 4 4 4 f f d d d d 
+            d d f f f 4 f f f 4 f f f d d d 
+            d d f f f 4 4 4 4 4 f f f d d d 
+            d d f f f e f f f 4 f f f d d d 
+            d d f f f e e e e e f f f d d d 
+            d d f f f e f f f e f f f d d d 
+            d d f f f e e e e e f f f d d d 
+            d d f f f e f f f e f f f d d d 
+            1 1 d f f f f f f f f f d d d d 
+            1 1 d d f f f f f f f d b d d d 
+            d d d d d d 1 d d d d d d d d d 
+            d d d d d d d d d d d d d d d d 
+            d d d d d d d d d d d d d d b d 
+            `, SpriteKind.Building)
+        tiles.placeOnRandomTile(cave_entrance, tiles.util.door0)
+        mySprite.y += 16
+    } else if (tiles.getLoadedMap() == map_cave1) {
+        tiles.destroySpritesOfKind(SpriteKind.Spectre)
+        tiles.destroySpritesOfKind(SpriteKind.Building)
+        tiles.destroySpritesOfKind(SpriteKind.Projectile)
+        mySprite.y += -16
+        tiles.coverAllTiles(tiles.util.door0, assets.tile`myTile9`)
+        if (hasSword == 1) {
+            tiles.replaceAllTiles(sprites.dungeon.chestClosed, sprites.dungeon.chestOpen)
+        }
+    } else {
+    	
+    }
+}
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     facing = 3
 })
@@ -863,7 +911,7 @@ sprites.onOverlap(SpriteKind.Sword, SpriteKind.Spectre, function (sprite, otherS
     playerStabsSpectre(otherSprite)
 })
 function swingSword () {
-    if (!(swingingSword)) {
+    if (hasSword == 1 && !(swingingSword)) {
         swingingSword = true
         sword.setImage(static_image_sword[facing])
     }
@@ -922,6 +970,31 @@ function spawnHeart () {
         }
     }
 }
+function initializeTilemaps () {
+    map_field = tiles.createMap(tilemap`level3`)
+    map_cave1 = tiles.createMap(tilemap`level9`)
+    tiles.connectMapById(map_field, map_cave1, ConnectionKind.Door1)
+    tiles.loadMap(map_field)
+    cave_entrance = sprites.create(img`
+        d d d d d d d d d d d d d d d d 
+        d d d 1 1 d d d d d d d d b d d 
+        d d d 1 f 4 f f f 4 f d d d d d 
+        d d d f f 4 4 4 4 4 f f d d d d 
+        d d f f f 4 f f f 4 f f f d d d 
+        d d f f f 4 4 4 4 4 f f f d d d 
+        d d f f f e f f f 4 f f f d d d 
+        d d f f f e e e e e f f f d d d 
+        d d f f f e f f f e f f f d d d 
+        d d f f f e e e e e f f f d d d 
+        d d f f f e f f f e f f f d d d 
+        1 1 d f f f f f f f f f d d d d 
+        1 1 d d f f f f f f f d b d d d 
+        d d d d d d 1 d d d d d d d d d 
+        d d d d d d d d d d d d d d d d 
+        d d d d d d d d d d d d d d b d 
+        `, SpriteKind.Building)
+    tiles.placeOnRandomTile(cave_entrance, tiles.util.door0)
+}
 scene.onHitWall(SpriteKind.Spectre, function (sprite, location) {
     ghostChangeDirectionOnWallHit(sprite)
 })
@@ -972,15 +1045,70 @@ function setPlayerFacing () {
         sword.setImage(static_image_sword[facing])
     }
 }
+function treasureChest () {
+    if (hasSword == 0 && tiles.getLoadedMap() == map_cave1) {
+        mySprite2 = sprites.create(img`
+            ..............................................................................................................
+            ..............................................................................................................
+            ..............................................................................................................
+            ..............................................................................................................
+            ..............................................................................................................
+            ..............................................................................................................
+            ..............................................................................................................
+            ..............................................................................................................
+            .........................................................................................fffffff..............
+            .....................................................................................ffff1111111fffff.........
+            .................................................................................ffff11111111111119f..........
+            ............................................................................fffff11111111111111199f...........
+            ........................................................................ffff11111111111111111119ff............
+            ...................................................................fffff11111111111111111111999f..............
+            ...............................................................ffff11111111111fff11111119999fff...............
+            ...............................f...........................ffff111111111111fff1111119999ffff..................
+            ..............................ff......................fffff111111111111ffff111119999ffff......................
+            .............................fbbf.................ffff111111111111fffff111119999ffff..........................
+            ...........................ffbbbf............fffff111111111111ffff1111119999ffff..............................
+            ..........................fbbbbbbf.......ffff111111111111fffff1111119999ffff..................................
+            ..........................fbbbfbbf...ffff11111111111fffff11111119999ffff......................................
+            ..........................fbbbbbbbfff11111111111ffff111111119999ffff..........................................
+            ...........................fbbbbbbf11111111fffff111111119999ffff..............................................
+            ...........................fbbbbbbbf111ffff1111111119999ffff..................................................
+            ..........................fffbbbfbbffff1111111119999ffff......................................................
+            ......................ffffeefbbbbbbbf11111119999ffff..........................................................
+            ...................fffeefeeeefbbbbbbf1119999ffff..............................................................
+            ...............fffffeeeeefeeefbbbbbbbf99ffff..................................................................
+            .............fffeeeefeeeeefeefbbbbfbbfff......................................................................
+            ..........ffffeefeeeefeeeeefeefbbbbbbbf.......................................................................
+            ..........fefeeeefeeeefeeeeefefbbbbbbbf.......................................................................
+            ..........feefeeeefeeeefeeeeffffbbbbbbbf......................................................................
+            ..........ffeeffeeefeeffffff...fbbbbfbbf......................................................................
+            ...........feeeeffffff..........fbbbbbbbf.....................................................................
+            ...........fffff................fbbbbbbbf.....................................................................
+            .................................fffffffff....................................................................
+            ..............................................................................................................
+            ..............................................................................................................
+            ..............................................................................................................
+            ..............................................................................................................
+            `, SpriteKind.Text)
+        tiles.setTileAt(chestLocation, sprites.dungeon.chestOpen)
+        mySprite2.setPosition(scene.cameraProperty(CameraProperty.X) + 8, scene.cameraProperty(CameraProperty.Y) - 46)
+        game.splash("A sword!", "It's not very sharp..")
+        hasSword = 1
+        mySprite2.destroy()
+    }
+}
 let heart: Sprite = null
 let mySprite2: Sprite = null
+let cave_entrance: Sprite = null
+let map_cave1: tiles.WorldMap = null
+let map_field: tiles.WorldMap = null
+let chestLocation: tiles.Location = null
 let ghost: Sprite = null
 let projectile: Sprite = null
 let this_ghost_facing = 0
 let sword: Sprite = null
 let mySprite: Sprite = null
 let index = 0
-let PreviousDirectionButton = 0
+let hasSword = 0
 let player_dead = false
 let kill_count = 0
 let swingingSword = false
@@ -994,9 +1122,7 @@ let static_image_ghost: Image[] = []
 let facing = 0
 let ghost_facing: number[] = []
 let this_ghost_index = 0
-tiles.setTilemap(tilemap`level2`)
-tiles.setTilemap(tilemap`level1`)
-tiles.setTilemap(tilemap`level3`)
+initializeTilemaps()
 declareValues()
 initializePlayer()
 game.onUpdate(function () {
@@ -1004,7 +1130,9 @@ game.onUpdate(function () {
 })
 forever(function () {
     if (sprites.allOfKind(SpriteKind.Spectre).length < 10) {
-        makeGhost()
+        if (tiles.getLoadedMap() == map_field) {
+            makeGhost()
+        }
     }
     pause(ghost_movement_interval)
     controlGhosts()
