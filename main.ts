@@ -36,19 +36,23 @@ function ghostChangeDirectionOnWallHit (sprite: Sprite) {
     console.log("Wall Hit: index" + sprites.allOfKind(SpriteKind.Spectre).indexOf(sprite) + " new facing " + ghost_facing[this_ghost_index] + " grtf " + ghost_ready_to_fire[this_ghost_index] + "call moveGhost")
     moveGhost(sprite, this_ghost_index)
 }
-function playerGotHit (sprite: Sprite) {
-    info.changeLifeBy(-1)
-    sprite.setFlag(SpriteFlag.GhostThroughSprites, true)
-    for (let index2 = 0; index2 < 5; index2++) {
-        sprite.setFlag(SpriteFlag.Invisible, true)
-        pause(50)
-        sprite.setFlag(SpriteFlag.Invisible, false)
-        pause(50)
+function playerGotHit () {
+    if (player_invincible == false) {
+        player_invincible = true
+        info.changeLifeBy(-1)
+        for (let index2 = 0; index2 < 10; index2++) {
+            mySprite.setFlag(SpriteFlag.Invisible, true)
+            mySpriteBodyAndHead.setFlag(SpriteFlag.Invisible, true)
+            pause(50)
+            mySprite.setFlag(SpriteFlag.Invisible, false)
+            mySpriteBodyAndHead.setFlag(SpriteFlag.Invisible, false)
+            pause(50)
+        }
+        player_invincible = false
     }
-    sprite.setFlag(SpriteFlag.GhostThroughSprites, false)
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function (sprite, otherSprite) {
-    playerGotHit(sprite)
+    playerGotHit()
 })
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     facing = 0
@@ -1299,6 +1303,7 @@ function declareValues () {
     swingingSword = false
     kill_count = 0
     player_dead = false
+    player_invincible = false
     info.setLife(3)
     info.setScore(0)
     facing = 1
@@ -1333,7 +1338,7 @@ function initializePlayer () {
     sword.top = mySprite.bottom - 4
     sword.x = mySprite.x
     controller.moveSprite(mySprite, 80, 80)
-    mySprite.setFlag(SpriteFlag.Ghost, false)
+    mySprite.setFlag(SpriteFlag.GhostThroughSprites, true)
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     swingSword()
@@ -1352,9 +1357,6 @@ controller.down.onEvent(ControllerButtonEvent.Released, function () {
     } else if (controller.up.isPressed()) {
         facing = 0
     }
-})
-tiles.onMapLoaded(function (tilemap2) {
-	
 })
 function playerStabsBat (sprite: Sprite) {
     sprite.setVelocity(0, 0)
@@ -1517,7 +1519,7 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite, otherSprite) {
     otherSprite.destroy()
-    playerGotHit(sprite)
+    playerGotHit()
 })
 function makeBats () {
     for (let index2 = 0; index2 < 10; index2++) {
@@ -1733,7 +1735,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSpr
     info.changeLifeBy(1)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Spectre, function (sprite, otherSprite) {
-    playerGotHit(sprite)
+    playerGotHit()
 })
 function DestroyAllTheThings () {
     tiles.destroySpritesOfKind(SpriteKind.Spectre)
@@ -1829,8 +1831,6 @@ let chestLocation: tiles.Location = null
 let ghost: Sprite = null
 let projectile: Sprite = null
 let sword: Sprite = null
-let mySpriteBodyAndHead: Sprite = null
-let mySprite: Sprite = null
 let index = 0
 let hasSword = 0
 let player_dead = false
@@ -1847,6 +1847,9 @@ let static_image_hero_feet: Image[] = []
 let static_image_hero: Image[] = []
 let static_image_ghost: Image[] = []
 let facing = 0
+let mySpriteBodyAndHead: Sprite = null
+let mySprite: Sprite = null
+let player_invincible = false
 let ghost_ready_to_fire: number[] = []
 let ghost_facing: number[] = []
 let this_ghost_facing = 0
@@ -1856,12 +1859,6 @@ initializeTilemaps()
 initializePlayer()
 game.onUpdate(function () {
     setPlayerFacing()
-})
-forever(function () {
-	
-})
-forever(function () {
-	
 })
 forever(function () {
     if (tiles.getLoadedMap() == map_field) {
