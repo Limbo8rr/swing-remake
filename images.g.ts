@@ -125,24 +125,6 @@ namespace myImages {
 . . . . . . . . . . . . . . . . 
 . . . . . . . . . . . . . . . . 
 `;
-            case "image6":return img`
-d d d d d d d d d d d d d d d d 
-d d d 1 1 d d d d d d d d b d d 
-d d d 1 f 4 f f f 4 f d d d d d 
-d d d f f 4 4 4 4 4 f f d d d d 
-d d f f f 4 f f f 4 f f f d d d 
-d d f f f 4 4 4 4 4 f f f d d d 
-d d f f f e f f f 4 f f f d d d 
-d d f f f e e e e e f f f d d d 
-d d f f f e f f f e f f f d d d 
-d d f f f e e e e e f f f d d d 
-d d f f f e f f f e f f f d d d 
-1 1 d f f f f f f f f f d d d d 
-1 1 d d f f f f f f f d b d d d 
-d d d d d d 1 d d d d d d d d d 
-d d d d d d d d d d d d d d d d 
-d d d d d d d d d d d d d d b d 
-`;
             case "image7":return img`
 . . . . . . f f f f . . . . . . 
 . . . . f f e e e e f f . . . . 
