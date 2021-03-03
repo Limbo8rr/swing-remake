@@ -35,10 +35,10 @@ function ghostChangeDirectionOnWallHit (sprite: Sprite) {
     }
     moveGhost(sprite, this_ghost_index)
 }
-function playerGotHit () {
+function playerGotHit (damage: number) {
     if (player_invincible == false) {
         player_invincible = true
-        info.changeLifeBy(-1)
+        info.changeLifeBy(damage * -1)
         for (let index2 = 0; index2 < 20; index2++) {
             mySprite.setFlag(SpriteFlag.Invisible, true)
             mySpriteBodyAndHead.setFlag(SpriteFlag.Invisible, true)
@@ -51,7 +51,7 @@ function playerGotHit () {
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function (sprite, otherSprite) {
-    playerGotHit()
+    playerGotHit(1)
 })
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     facing = 0
@@ -1353,7 +1353,7 @@ function playerOverlapsGuardianStatue () {
         info.changeLifeBy(1)
         awakenGuardianStatue()
     } else {
-        playerGotHit()
+        playerGotHit(1)
     }
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -3246,10 +3246,12 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     facing = 3
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite, otherSprite) {
-    if (otherSprite != guardianFlame) {
+    if (otherSprite == guardianFlame) {
+        playerGotHit(2)
+    } else {
         otherSprite.destroy()
+        playerGotHit(1)
     }
-    playerGotHit()
 })
 function makeBats () {
     for (let index2 = 0; index2 < 10; index2++) {
@@ -3349,6 +3351,12 @@ controller.up.onEvent(ControllerButtonEvent.Released, function () {
         facing = 3
     } else if (controller.down.isPressed()) {
         facing = 1
+    }
+})
+sprites.onOverlap(SpriteKind.Spectre, SpriteKind.Projectile, function (sprite, otherSprite) {
+    if (otherSprite == guardianFlame) {
+        kill_count += -1
+        playerStabsSpectre(sprite)
     }
 })
 sprites.onOverlap(SpriteKind.Sword, SpriteKind.Spectre, function (sprite, otherSprite) {
@@ -3551,7 +3559,7 @@ function teleport (x: number, y: number) {
     })
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Spectre, function (sprite, otherSprite) {
-    playerGotHit()
+    playerGotHit(1)
 })
 function DestroyAllTheThings () {
     tiles.destroySpritesOfKind(SpriteKind.Spectre)
