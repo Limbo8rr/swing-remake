@@ -3702,7 +3702,7 @@ function swingSword () {
         pause(swordStabDuration)
         sword.setImage(static_image_sword[4])
     } else if (hasSword == 0) {
-        mySprite.say("I have no weapon", 800)
+        mySpriteBodyAndHead.say("I have no weapon", 800)
     }
 }
 function moveGhost (this_ghost1: Sprite, this_ghost_index1: number) {
