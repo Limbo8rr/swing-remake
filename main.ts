@@ -3374,7 +3374,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.bug, function (sprite, otherSpri
     playerGotHit(1)
 })
 function dropCoins (deadEnemy: Sprite, value: number) {
-    timer.after(400, function () {
+    timer.after(200, function () {
         timer.background(function () {
             for (let index2 = 0; index2 < Math.ceil(value / 100); index2++) {
                 money = sprites.create(img`
