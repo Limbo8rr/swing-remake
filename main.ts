@@ -1422,8 +1422,8 @@ function initializePlayer () {
     sword.top = mySprite.bottom - 4
     sword.x = mySprite.x
     controller.moveSprite(mySprite, 80, 80)
-    mySprite.setFlag(SpriteFlag.GhostThroughSprites, true)
-    mySpriteBodyAndHead.setFlag(SpriteFlag.Ghost, true)
+    mySprite.setFlag(SpriteFlag.GhostThroughSprites, false)
+    mySpriteBodyAndHead.setFlag(SpriteFlag.GhostThroughWalls, true)
 }
 function playerOverlapsGuardianStatue () {
     controller.moveSprite(mySprite, 80, 0)
@@ -4225,21 +4225,22 @@ game.onUpdate(function () {
     setPlayerFacing()
 })
 forever(function () {
-    for (let index2 = 0; index2 < 2; index2++) {
-        if (tiles.getLoadedMap() == map_field || tiles.getLoadedMap() == map_field2) {
-            if (sprites.allOfKind(SpriteKind.Spectre).length < 10) {
-                makeGhost()
-            }
-            if (tiles.getLoadedMap() == map_field2 && sprites.allOfKind(SpriteKind.bug).length < 10) {
-                makeBeetle(sprites.castle.tilePath5)
-            }
+    if (tiles.getLoadedMap() == map_field || tiles.getLoadedMap() == map_field2) {
+        if (sprites.allOfKind(SpriteKind.Spectre).length < 10) {
+            makeGhost()
         }
-        pause(ghost_shoot_interval)
-        ghostFireSpit()
-        pause(ghost_shoot_interval)
-        ghostFireSpit()
-        controlGhosts()
-        moveBats()
+        if (tiles.getLoadedMap() == map_field2 && sprites.allOfKind(SpriteKind.bug).length < 10) {
+            makeBeetle(sprites.castle.tilePath5)
+        }
+    }
+    pause(ghost_shoot_interval)
+    ghostFireSpit()
+    pause(ghost_shoot_interval)
+    ghostFireSpit()
+    controlGhosts()
+    moveBats()
+    for (let index2 = 0; index2 < 2; index2++) {
+    	
     }
     moveBeetles()
 })
