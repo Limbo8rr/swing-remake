@@ -1303,6 +1303,7 @@ function declareValues () {
     // 2: do not set to fire on ghostMove
     ghost_ready_to_fire = []
     ghost_facing = []
+    beetle_skipMove = []
     ghost_movement_interval = 1000
     ghost_shoot_interval = 500
     facing = 1
@@ -1310,7 +1311,7 @@ function declareValues () {
     kill_count = 0
     player_dead = false
     player_invincible = false
-    info.setLife(600)
+    info.setLife(6)
     info.setScore(0)
     facing = 1
     hasSword = 0
@@ -1326,6 +1327,10 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 function moveBeetles () {
     for (let value of sprites.allOfKind(SpriteKind.bug)) {
+        if (beetle_skipMove[sprites.allOfKind(SpriteKind.bug).indexOf(value)] == 1) {
+            beetle_skipMove[sprites.allOfKind(SpriteKind.bug).indexOf(value)] = 0
+            continue;
+        }
         if (value.vy != 0 && value.vx != 0 && Math.percentChance(10)) {
             value.setVelocity(0, 0)
         } else if (Math.percentChance(40)) {
@@ -1417,8 +1422,8 @@ function initializePlayer () {
     sword.top = mySprite.bottom - 4
     sword.x = mySprite.x
     controller.moveSprite(mySprite, 80, 80)
-    mySprite.setFlag(SpriteFlag.GhostThroughSprites, false)
-    mySpriteBodyAndHead.setFlag(SpriteFlag.GhostThroughSprites, false)
+    mySprite.setFlag(SpriteFlag.GhostThroughSprites, true)
+    mySpriteBodyAndHead.setFlag(SpriteFlag.Ghost, true)
 }
 function playerOverlapsGuardianStatue () {
     controller.moveSprite(mySprite, 80, 0)
@@ -3298,6 +3303,7 @@ function playerStabsBeetle (sprite: Sprite) {
         beetle_HP.removeAt(index)
         kill_count += 1
     } else {
+        beetle_skipMove[index] = 1
         delta = -1 * (100 / Math.sqrt((mySprite.x - sprite.x) ** 2 + (mySprite.y - sprite.y) ** 2))
         sprite.setVelocity((mySprite.x - sprite.x) * delta, (mySprite.y - sprite.y) * delta)
         for (let index2 = 0; index2 < 3; index2++) {
@@ -3950,6 +3956,7 @@ function DestroyAllTheThings () {
     tiles.destroySpritesOfKind(SpriteKind.Food)
     tiles.destroySpritesOfKind(SpriteKind.bug)
     tiles.destroySpritesOfKind(SpriteKind.Coin)
+    beetle_skipMove = []
 }
 function makeGuardianStatue () {
     guardianStatue = sprites.create(img`
@@ -4051,7 +4058,7 @@ function makeGuardianStatue () {
 }
 function setPlayerFacing () {
     if (facing == 0) {
-        sword.bottom = mySpriteBodyAndHead.top - 1
+        sword.bottom = mySpriteBodyAndHead.top - -1
         sword.x = mySprite.x
     } else if (facing == 1) {
         sword.top = mySprite.bottom - 5
@@ -4193,6 +4200,7 @@ let kill_count = 0
 let swingingSword = false
 let ghost_shoot_interval = 0
 let ghost_movement_interval = 0
+let beetle_skipMove: number[] = []
 let ghost_ready_to_fire: number[] = []
 let beetle_HP: number[] = []
 let animation_Bat: Image[][] = []
