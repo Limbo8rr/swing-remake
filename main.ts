@@ -4067,6 +4067,7 @@ function treasureChest () {
     if (tiles.getLoadedMap() == map_field) {
         tiles.setTileAt(chestLocation, sprites.dungeon.chestOpen)
         game.splash("Nothing?")
+        mySpriteBodyAndHead.say("Why even have this here?", 2000)
     } else if (hasSword == 0 && tiles.getLoadedMap() == map_cave1) {
         hasSword = 1
         mySprite2 = sprites.create(img`
