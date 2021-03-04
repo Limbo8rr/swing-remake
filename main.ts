@@ -5,6 +5,8 @@ namespace SpriteKind {
     export const Building = SpriteKind.create()
     export const Bat = SpriteKind.create()
     export const Boss = SpriteKind.create()
+    export const bug = SpriteKind.create()
+    export const Coin = SpriteKind.create()
 }
 function moveBats () {
     for (let value of sprites.allOfKind(SpriteKind.Bat)) {
@@ -55,6 +57,10 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Bat, function (sprite, otherSpri
 })
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     facing = 0
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Coin, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    info.changeScoreBy(100)
 })
 function declareValues () {
     static_image_ghost = [img`
@@ -1291,6 +1297,7 @@ function declareValues () {
         . . . . . f c c c c f . . . . . 
         . . . . . . f f f f . . . . . . 
         `]]
+    beetle_HP = []
     // 0: can be set to randomly fire on GhostMove
     // 1: ready to fire on next ghostMove
     // 2: do not set to fire on ghostMove
@@ -1317,16 +1324,79 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     }
     hasSword = 1
 })
+function moveBeetles () {
+    for (let value of sprites.allOfKind(SpriteKind.bug)) {
+        if (Math.percentChance(40)) {
+            value.setVelocity(randint(-1, 1) * 30, 0)
+        } else if (Math.percentChance(40)) {
+            value.setVelocity(0, randint(-1, 1) * 30)
+        } else if (Math.percentChance(40)) {
+            value.setVelocity(randint(-2, 2) * 15, randint(-2, 2) * 15)
+        } else {
+            value.setVelocity(0, 0)
+        }
+        if (value.vx != 0 || value.vy != 0) {
+            animation.runImageAnimation(
+            value,
+            [img`
+                .......ffff.......
+                .....ff3333ff.....
+                ....f33113133f....
+                ...f3333333333f...
+                ..f333ffffff333f..
+                ..f1ff333333ff1f..
+                .ffff33333333ffff.
+                .f3f3331133333f3f.
+                .f3f33ffffff33f3f.
+                f331ff333333ff133f
+                f3fff33333333fff3f
+                f3f3f33113333f3f3f
+                .f3f1f333333f1f3f.
+                .f3ffffffffffff3f.
+                ..f1ff331133fff1..
+                ..1ff33ffff33f1f1.
+                ..ff1ff1ff1f1ff1f.
+                ...1ff1f1f1ff1ff..
+                `,img`
+                .......ffff.......
+                .....ff3333ff.....
+                ....f33113133f....
+                ...f3333333333f...
+                ..f333ffffff333f..
+                ..f1ff333333ff1f..
+                .ffff33333333ffff.
+                .f3f3331133333f3f.
+                .f3f33ffffff33f3f.
+                f331ff333333ff133f
+                f3fff33333333fff3f
+                f3f3f33113333f3f3f
+                .f3f1f333333f1f3f.
+                .f3ffffffffffff3f.
+                ..1fff331133ff1f..
+                .1f1f33ffff33ff1..
+                .f1ff1f1ff1ff1ff..
+                ..ff1ff1f1f1ff1...
+                `],
+            140,
+            true
+            )
+        } else {
+            animation.stopAnimation(animation.AnimationTypes.All, value)
+        }
+    }
+}
 function distanceBetween2Sprites (sprite1: Sprite, sprite2: Sprite) {
     return Math.sqrt((sprite1.x - sprite2.x) * (sprite1.x - sprite2.x) + (sprite1.y - sprite2.y) * (sprite1.y - sprite2.y))
 }
-function playerStabsSpectre (sprite: Sprite) {
-    sprite.setVelocity(0, 0)
-    index = sprites.allOfKind(SpriteKind.Spectre).indexOf(sprite)
+function playerStabsSpectre (weapon: Sprite, ghost: Sprite) {
+    ghost.setVelocity(0, 0)
+    index = sprites.allOfKind(SpriteKind.Spectre).indexOf(ghost)
     ghost_facing.removeAt(index)
     ghost_ready_to_fire.removeAt(index)
-    sprite.destroy(effects.disintegrate, 500)
-    info.changeScoreBy(100)
+    if (weapon.kind() != SpriteKind.Projectile) {
+        dropCoins(ghost, 100)
+    }
+    ghost.destroy(effects.disintegrate, 500)
     kill_count += 1
     if (kill_count != 0 && kill_count % 5 == 0) {
         spawnHeart()
@@ -1383,7 +1453,10 @@ controller.down.onEvent(ControllerButtonEvent.Released, function () {
 function playerStabsBat (sprite: Sprite) {
     sprite.setVelocity(0, 0)
     sprite.destroy(effects.disintegrate, 500)
-    info.changeScoreBy(20)
+    kill_count_bat += 1
+    if (kill_count_bat != 0 && kill_count_bat % 5 == 0) {
+        dropCoins(sprite, 100)
+    }
 }
 function setupMapField () {
     tiles.coverAllTiles(tiles.util.door0, assets.tile`myTile25`)
@@ -1399,7 +1472,9 @@ function setupMapField () {
         tiles.placeOnTile(coverTile, value)
         coverTile.z = 0.5
     }
-    makeGuardianStatue()
+    if (guardianStatueDead == 0) {
+        makeGuardianStatue()
+    }
 }
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     facing = 2
@@ -1417,14 +1492,14 @@ function ghostFireSpit () {
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
-                    . . . . . . . . c c . . . . . . 
-                    . . . . . c a a a a . . . . . . 
-                    . . . . . a a f f b a . . . . . 
-                    . . . . c a b f f c b . . . . . 
-                    . . . . c b b b a f c b . . . . 
-                    . . . . c b a c a b b b . . . . 
-                    . . . . . b b f f a a c . . . . 
-                    . . . . . . a a b b c . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . a f f . . . . . . . 
+                    . . . . . a b f f . b . . . . . 
+                    . . . . . . b b a f c . . . . . 
+                    . . . . . . a c a b b . . . . . 
+                    . . . . . . . f f a . . . . . . 
+                    . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     `, this_ghost, 0, -100)
@@ -1436,14 +1511,14 @@ function ghostFireSpit () {
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
-                    . . . . . . . . c c . . . . . . 
-                    . . . . . c a a a a . . . . . . 
-                    . . . . . a a f f b a . . . . . 
-                    . . . . c a b f f c b . . . . . 
-                    . . . . c b b b a f c b . . . . 
-                    . . . . c b a c a b b b . . . . 
-                    . . . . . b b f f a a c . . . . 
-                    . . . . . . a a b b c . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . a f f . . . . . . . 
+                    . . . . . a b f f . b . . . . . 
+                    . . . . . . b b a f c . . . . . 
+                    . . . . . . a c a b b . . . . . 
+                    . . . . . . . f f a . . . . . . 
+                    . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     `, this_ghost, 0, 100)
@@ -1455,14 +1530,14 @@ function ghostFireSpit () {
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
-                    . . . . . . . . c c . . . . . . 
-                    . . . . . c a a a a . . . . . . 
-                    . . . . . a a f f b a . . . . . 
-                    . . . . c a b f f c b . . . . . 
-                    . . . . c b b b a f c b . . . . 
-                    . . . . c b a c a b b b . . . . 
-                    . . . . . b b f f a a c . . . . 
-                    . . . . . . a a b b c . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . a f f . . . . . . . 
+                    . . . . . a b f f . b . . . . . 
+                    . . . . . . b b a f c . . . . . 
+                    . . . . . . a c a b b . . . . . 
+                    . . . . . . . f f a . . . . . . 
+                    . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     `, this_ghost, -100, 0)
@@ -1474,14 +1549,14 @@ function ghostFireSpit () {
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
-                    . . . . . . . . c c . . . . . . 
-                    . . . . . c a a a a . . . . . . 
-                    . . . . . a a f f b a . . . . . 
-                    . . . . c a b f f c b . . . . . 
-                    . . . . c b b b a f c b . . . . 
-                    . . . . c b a c a b b b . . . . 
-                    . . . . . b b f f a a c . . . . 
-                    . . . . . . a a b b c . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . a f f . . . . . . . 
+                    . . . . . a b f f . b . . . . . 
+                    . . . . . . b b a f c . . . . . 
+                    . . . . . . a c a b b . . . . . 
+                    . . . . . . . f f a . . . . . . 
+                    . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     `, this_ghost, 100, 0)
@@ -3211,6 +3286,26 @@ sprites.onOverlap(SpriteKind.Spectre, SpriteKind.Boss, function (sprite, otherSp
     ghost_facing[sprites.allOfKind(SpriteKind.Spectre).indexOf(sprite)] = 1
     moveGhost(sprite, sprites.allOfKind(SpriteKind.Spectre).indexOf(sprite))
 })
+function playerStabsBeetle (sprite: Sprite) {
+    index = sprites.allOfKind(SpriteKind.bug).indexOf(sprite)
+    beetle_HP[index] = beetle_HP[index] - 1
+    if (beetle_HP[sprites.allOfKind(SpriteKind.bug).indexOf(sprite)] == 0) {
+        dropCoins(sprite, 100)
+        sprite.setVelocity(0, 0)
+        sprite.destroy(effects.disintegrate, 500)
+        beetle_HP.removeAt(index)
+        kill_count += 1
+    } else {
+        delta = -1 * (100 / Math.sqrt((mySprite.x - sprite.x) ** 2 + (mySprite.y - sprite.y) ** 2))
+        sprite.setVelocity((mySprite.x - sprite.x) * delta, (mySprite.y - sprite.y) * delta)
+        for (let index2 = 0; index2 < 3; index2++) {
+            sprite.setFlag(SpriteFlag.Invisible, true)
+            pause(20)
+            sprite.setFlag(SpriteFlag.Invisible, false)
+            pause(20)
+        }
+    }
+}
 function makeGhost () {
     ghost = sprites.create(static_image_ghost[1], SpriteKind.Spectre)
     tiles.placeOnRandomTile(ghost, sprites.castle.tilePath5)
@@ -3236,9 +3331,13 @@ function roomChange (doorType: Image) {
     DestroyAllTheThings()
     tiles.placeOnRandomTile(mySprite, doorType)
     if (tiles.getLoadedMap() == map_field) {
-        mySprite.y += 16
+        scene.setBackgroundColor(7)
+        if (doorType == tiles.util.door0 || doorType == tiles.util.door2) {
+            mySprite.y += 16
+        }
         setupMapField()
     } else if (tiles.getLoadedMap() == map_cave1) {
+        guardianStatueAwake = 0
         scene.setBackgroundColor(15)
         makeBats()
         mySprite.y += -16
@@ -3246,7 +3345,220 @@ function roomChange (doorType: Image) {
         if (hasSword == 1) {
             tiles.replaceAllTiles(sprites.dungeon.chestClosed, sprites.dungeon.chestOpen)
         }
+    } else if (tiles.getLoadedMap() == map_field2) {
+        tiles.coverAllTiles(tiles.util.door0, sprites.castle.tileGrass1)
+        tiles.coverAllTiles(tiles.util.door1, sprites.castle.tileGrass1)
+        tiles.coverAllTiles(tiles.util.door2, sprites.castle.tileGrass1)
+        tiles.coverAllTiles(tiles.util.door8, sprites.castle.tileGrass1)
+        tiles.coverAllTiles(tiles.util.door10, sprites.castle.tileGrass1)
+        tiles.coverAllTiles(assets.tile`myTile14`, sprites.castle.tileGrass1)
+        if (doorType == tiles.util.door0 || doorType == tiles.util.door0) {
+            mySprite.x += 16
+        } else if (doorType == tiles.util.door2) {
+            mySprite.y += -16
+        } else if (doorType == tiles.util.door8) {
+            mySprite.y += 16
+        } else if (doorType == tiles.util.door10) {
+            mySprite.x += -16
+        }
+        for (let index2 = 0; index2 < 10; index2++) {
+            makeGhost()
+        }
+        for (let index2 = 0; index2 < 10; index2++) {
+            makeBeetle(sprites.castle.tilePath5)
+        }
+        moveBeetles()
     }
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.bug, function (sprite, otherSprite) {
+    playerGotHit(1)
+})
+function dropCoins (deadEnemy: Sprite, value: number) {
+    timer.after(400, function () {
+        timer.background(function () {
+            for (let index2 = 0; index2 < Math.ceil(value / 100); index2++) {
+                money = sprites.create(img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `, SpriteKind.Coin)
+                money.setPosition(deadEnemy.x + randint(-5, 5), deadEnemy.y + randint(0, -10))
+                animation.runImageAnimation(
+                money,
+                [img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 1 5 . . . . . . . 
+                    . . . . . . 1 5 5 4 . . . . . . 
+                    . . . . . . 5 5 4 e . . . . . . 
+                    . . . . . . . 4 e . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `,img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 1 5 . . . . . . . 
+                    . . . . . . 1 5 5 4 . . . . . . 
+                    . . . . . . 5 5 4 e . . . . . . 
+                    . . . . . . . 4 e . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `,img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 1 5 . . . . . . . 
+                    . . . . . . . 5 5 . . . . . . . 
+                    . . . . . . . 5 4 . . . . . . . 
+                    . . . . . . . 4 e . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `,img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 1 5 . . . . . . . 
+                    . . . . . . . 5 5 . . . . . . . 
+                    . . . . . . . 5 4 . . . . . . . 
+                    . . . . . . . 4 e . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `,img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 1 . . . . . . . . 
+                    . . . . . . . 5 . . . . . . . . 
+                    . . . . . . . 5 . . . . . . . . 
+                    . . . . . . . 4 . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `,img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 1 . . . . . . . . 
+                    . . . . . . . 5 . . . . . . . . 
+                    . . . . . . . 5 . . . . . . . . 
+                    . . . . . . . 4 . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `,img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 1 5 . . . . . . . 
+                    . . . . . . . 5 5 . . . . . . . 
+                    . . . . . . . 5 4 . . . . . . . 
+                    . . . . . . . 4 e . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `,img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 1 5 . . . . . . . 
+                    . . . . . . . 5 5 . . . . . . . 
+                    . . . . . . . 5 4 . . . . . . . 
+                    . . . . . . . 4 e . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `,img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 1 5 . . . . . . . 
+                    . . . . . . 1 5 5 4 . . . . . . 
+                    . . . . . . 5 5 4 e . . . . . . 
+                    . . . . . . . 4 e . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `],
+                50,
+                true
+                )
+                pause(50)
+            }
+        })
+    })
 }
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     facing = 3
@@ -3278,6 +3590,12 @@ function makeBats () {
         )
     }
 }
+scene.onOverlapTile(SpriteKind.Player, tiles.util.door2, function (sprite, location) {
+    if (sprite == mySprite) {
+        tiles.loadConnectedMap(ConnectionKind.Door2)
+        roomChange(tiles.util.door2)
+    }
+})
 function youDied () {
     if (player_dead != true) {
         controller.moveSprite(mySprite, 0, 0)
@@ -3360,14 +3678,17 @@ controller.up.onEvent(ControllerButtonEvent.Released, function () {
         facing = 1
     }
 })
+sprites.onOverlap(SpriteKind.Sword, SpriteKind.bug, function (sprite, otherSprite) {
+    playerStabsBeetle(otherSprite)
+})
 sprites.onOverlap(SpriteKind.Spectre, SpriteKind.Projectile, function (sprite, otherSprite) {
     if (otherSprite == guardianFlame) {
         kill_count += -1
-        playerStabsSpectre(sprite)
+        playerStabsSpectre(otherSprite, sprite)
     }
 })
 sprites.onOverlap(SpriteKind.Sword, SpriteKind.Spectre, function (sprite, otherSprite) {
-    playerStabsSpectre(otherSprite)
+    playerStabsSpectre(sprite, otherSprite)
 })
 sprites.onOverlap(SpriteKind.Sword, SpriteKind.Boss, function (sprite, otherSprite) {
     if (tiles.getLoadedMap() == map_field) {
@@ -3430,8 +3751,9 @@ function playerStabsGuardianStatue (otherSprite: Sprite) {
             if (guardianFlame) {
                 guardianFlame.destroy()
             }
+            dropCoins(otherSprite, 2000)
             otherSprite.destroy(effects.disintegrate, 500)
-            info.changeScoreBy(2000)
+            guardianStatueDead = 1
             for (let index2 = 0; index2 < 2; index2++) {
                 heart = sprites.create(img`
                     . . . . . . . . . . . . . . . . 
@@ -3500,8 +3822,13 @@ function spawnHeart () {
         . . . . . . . . . . . . . . . . 
         `, SpriteKind.Food)
     tiles.placeOnRandomTile(heart, sprites.castle.tilePath5)
-    while (distanceBetween2Sprites(mySprite, heart) < 50 || distanceBetween2Sprites(mySprite, heart) > 100) {
+    i = 0
+    while (distanceBetween2Sprites(mySprite, heart) < 32 || distanceBetween2Sprites(mySprite, heart) > 80) {
+        i += 1
         tiles.placeOnRandomTile(heart, sprites.castle.tilePath5)
+        if (i % 2 == 0) {
+            tiles.placeOnRandomTile(heart, assets.tile`myTile45`)
+        }
         if (player_dead == true) {
             break;
         }
@@ -3510,7 +3837,9 @@ function spawnHeart () {
 function initializeTilemaps () {
     map_field = tiles.createMap(tilemap`level15`)
     map_cave1 = tiles.createMap(tilemap`level9`)
+    map_field2 = tiles.createMap(tilemap`level19`)
     tiles.connectMapById(map_field, map_cave1, ConnectionKind.Door1)
+    tiles.connectMapById(map_field, map_field2, ConnectionKind.Door2)
     tiles.loadMap(map_field)
     setupMapField()
 }
@@ -3548,6 +3877,37 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSpr
     otherSprite.destroy()
     info.changeLifeBy(1)
 })
+function makeBeetle (spawnTile: Image) {
+    beetle = sprites.create(img`
+        .......ffff.......
+        .....ff3333ff.....
+        ....f33113133f....
+        ...f3333333333f...
+        ..f333ffffff333f..
+        ..f1ff333333ff1f..
+        .ffff33333333ffff.
+        .f3f3331133333f3f.
+        .f3f33ffffff33f3f.
+        f331ff333333ff133f
+        f3fff33333333fff3f
+        f3f3f33113333f3f3f
+        .f3f1f333333f1f3f.
+        .f3ffffffffffff3f.
+        ..f1ff331133fff1..
+        ..1ff33ffff33f1f1.
+        ..ff1ff1ff1f1ff1f.
+        ...1ff1f1f1ff1ff..
+        `, SpriteKind.bug)
+    tiles.placeOnRandomTile(beetle, spawnTile)
+    while (distanceBetween2Sprites(mySprite, beetle) < 120) {
+        tiles.placeOnRandomTile(beetle, spawnTile)
+        if (player_dead == true) {
+            break;
+        }
+    }
+    beetle_HP[sprites.allOfKind(SpriteKind.bug).indexOf(beetle)] = 3
+    beetle.setFlag(SpriteFlag.BounceOnWall, true)
+}
 function teleport (x: number, y: number) {
     controller.moveSprite(mySprite, 0, 0)
     mySprite.startEffect(effects.blizzard, 200)
@@ -3576,6 +3936,8 @@ function DestroyAllTheThings () {
     tiles.destroySpritesOfKind(SpriteKind.Bat)
     tiles.destroySpritesOfKind(SpriteKind.Boss)
     tiles.destroySpritesOfKind(SpriteKind.Food)
+    tiles.destroySpritesOfKind(SpriteKind.bug)
+    tiles.destroySpritesOfKind(SpriteKind.Coin)
 }
 function makeGuardianStatue () {
     guardianStatue = sprites.create(img`
@@ -3760,18 +4122,25 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Boss, function (sprite, otherSpr
         playerOverlapsGuardianStatue()
     }
 })
+let beetle: Sprite = null
 let this_ghost_ready_to_fire = 0
+let i = 0
 let heart: Sprite = null
 let mySprite2: Sprite = null
 let bat: Sprite = null
+let money: Sprite = null
+let map_field2: tiles.WorldMap = null
 let map_cave1: tiles.WorldMap = null
 let chestLocation: tiles.Location = null
 let ghost: Sprite = null
+let delta = 0
 let guardianFlame: Sprite = null
 let guardianStatue: Sprite = null
 let map_field: tiles.WorldMap = null
 let projectile: Sprite = null
+let guardianStatueDead = 0
 let coverTile: Sprite = null
+let kill_count_bat = 0
 let guardianStatueAwake = 0
 let sword: Sprite = null
 let index = 0
@@ -3785,6 +4154,7 @@ let swingingSword = false
 let ghost_shoot_interval = 0
 let ghost_movement_interval = 0
 let ghost_ready_to_fire: number[] = []
+let beetle_HP: number[] = []
 let animation_Bat: Image[][] = []
 let static_image_bat: Image = null
 let animation_ghost: Image[][] = []
@@ -3807,17 +4177,23 @@ game.onUpdate(function () {
     setPlayerFacing()
 })
 forever(function () {
-    if (tiles.getLoadedMap() == map_field) {
-        if (sprites.allOfKind(SpriteKind.Spectre).length < 10) {
-            makeGhost()
+    for (let index2 = 0; index2 < 2; index2++) {
+        if (tiles.getLoadedMap() == map_field || tiles.getLoadedMap() == map_field2) {
+            if (sprites.allOfKind(SpriteKind.Spectre).length < 10) {
+                makeGhost()
+            }
+            if (tiles.getLoadedMap() == map_field2 && sprites.allOfKind(SpriteKind.bug).length < 10) {
+                makeBeetle(sprites.castle.tilePath5)
+            }
         }
+        pause(ghost_shoot_interval)
+        ghostFireSpit()
+        pause(ghost_shoot_interval)
+        ghostFireSpit()
+        controlGhosts()
+        moveBats()
     }
-    pause(ghost_shoot_interval)
-    ghostFireSpit()
-    pause(ghost_shoot_interval)
-    ghostFireSpit()
-    controlGhosts()
-    moveBats()
+    moveBeetles()
 })
 // This variable can't changed during gameplay, only before the start
 game.onUpdateInterval(swordRefreshDelay, function () {
