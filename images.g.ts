@@ -861,6 +861,46 @@ f3f3f33113333f3f3f
 . . . . . . . . . . . . . . . . 
 . . . . . . . . . . . . . . . . 
 `;
+            case "image30":return img`
+.......ffff.......
+.....ff3333ff.....
+....f33113133f....
+...f3333333333f...
+..f333ffffff333f..
+..f1ff333333ff1f..
+.ffff33333333ffff.
+.f3f3331133333f3f.
+.f3f33ffffff33f3f.
+f331ff333333ff133f
+f3fff33333333fff3f
+f3f3f33113333f3f3f
+.f3f1f333333f1f3f.
+.f3ffffffffffff3f.
+..f1ff331133fff1..
+..1ff33ffff33f1f1.
+..ff1ff1ff1f1ff1f.
+...1ff1f1f1ff1ff..
+`;
+            case "image29":return img`
+.......ffff.......
+.....ff3333ff.....
+....f33113133f....
+...f3333333333f...
+..f333ffffff333f..
+..f1ff333333ff1f..
+.ffff33333333ffff.
+.f3f3331133333f3f.
+.f3f33ffffff33f3f.
+f331ff333333ff133f
+f3fff33333333fff3f
+f3f3f33113333f3f3f
+.f3f1f333333f1f3f.
+.f3ffffffffffff3f.
+..f1ff331133fff1..
+..1ff33ffff33f1f1.
+..ff1ff1ff1f1ff1f.
+...1ff1f1f1ff1ff..
+`;
         }
         return null;
     })

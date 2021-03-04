@@ -1310,7 +1310,7 @@ function declareValues () {
     kill_count = 0
     player_dead = false
     player_invincible = false
-    info.setLife(6)
+    info.setLife(600)
     info.setScore(0)
     facing = 1
     hasSword = 0
@@ -1326,14 +1326,16 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 function moveBeetles () {
     for (let value of sprites.allOfKind(SpriteKind.bug)) {
-        if (Math.percentChance(40)) {
-            value.setVelocity(randint(-1, 1) * 30, 0)
-        } else if (Math.percentChance(40)) {
-            value.setVelocity(0, randint(-1, 1) * 30)
-        } else if (Math.percentChance(40)) {
-            value.setVelocity(randint(-2, 2) * 15, randint(-2, 2) * 15)
-        } else {
+        if (value.vy != 0 && value.vx != 0 && Math.percentChance(10)) {
             value.setVelocity(0, 0)
+        } else if (Math.percentChance(40)) {
+            value.setVelocity(0, (randint(0, 1) * 2 - 1) * 30)
+        } else if (Math.percentChance(40)) {
+            value.setVelocity((randint(0, 1) * 2 - 1) * 30, 0)
+        } else if (Math.percentChance(40) || value.vy != 0 && value.vx != 0) {
+            value.setVelocity((randint(0, 1) * 2 - 1) * randint(1, 2) * 15, (randint(0, 1) * 2 - 1) * randint(1, 2) * 15)
+        } else {
+        	
         }
         if (value.vx != 0 || value.vy != 0) {
             animation.runImageAnimation(
@@ -3309,9 +3311,11 @@ function playerStabsBeetle (sprite: Sprite) {
 function makeGhost () {
     ghost = sprites.create(static_image_ghost[1], SpriteKind.Spectre)
     tiles.placeOnRandomTile(ghost, sprites.castle.tilePath5)
+    i = 0
     while (distanceBetween2Sprites(mySprite, ghost) < 64) {
+        i += 1
         tiles.placeOnRandomTile(ghost, sprites.castle.tilePath5)
-        if (player_dead == true) {
+        if (player_dead == true || i > 30) {
             break;
         }
     }
@@ -3364,9 +3368,7 @@ function roomChange (doorType: Image) {
         for (let index2 = 0; index2 < 10; index2++) {
             makeGhost()
         }
-        for (let index2 = 0; index2 < 10; index2++) {
-            makeBeetle(sprites.castle.tilePath5)
-        }
+        makeAllBeetles(sprites.castle.tilePath5)
         moveBeetles()
     }
 }
@@ -3576,9 +3578,11 @@ function makeBats () {
         bat = sprites.create(static_image_bat, SpriteKind.Bat)
         tiles.placeOnRandomTile(bat, assets.tile`myTile10`)
         bat.setBounceOnWall(true)
+        i = 0
         while (distanceBetween2Sprites(mySprite, bat) < 64) {
+            i += 1
             tiles.placeOnRandomTile(bat, assets.tile`myTile10`)
-            if (player_dead == true) {
+            if (player_dead == true || i > 30) {
                 break;
             }
         }
@@ -3799,6 +3803,12 @@ function playerStabsGuardianStatue (otherSprite: Sprite) {
         awakenGuardianStatue()
     }
 }
+sprites.onOverlap(SpriteKind.bug, SpriteKind.bug, function (sprite, otherSprite) {
+    sprite.vx = sprite.vx * -1
+    sprite.vy = sprite.vy * -1
+    otherSprite.vx = otherSprite.vx * -1
+    otherSprite.vy = otherSprite.vy * -1
+})
 info.onLifeZero(function () {
     youDied()
 })
@@ -3829,7 +3839,7 @@ function spawnHeart () {
         if (i % 2 == 0) {
             tiles.placeOnRandomTile(heart, assets.tile`myTile45`)
         }
-        if (player_dead == true) {
+        if (player_dead == true || i > 30) {
             break;
         }
     }
@@ -3899,13 +3909,15 @@ function makeBeetle (spawnTile: Image) {
         ...1ff1f1f1ff1ff..
         `, SpriteKind.bug)
     tiles.placeOnRandomTile(beetle, spawnTile)
+    i = 0
     while (distanceBetween2Sprites(mySprite, beetle) < 120) {
+        i += 1
         tiles.placeOnRandomTile(beetle, spawnTile)
-        if (player_dead == true) {
+        if (player_dead == true || i > 30) {
             break;
         }
     }
-    beetle_HP[sprites.allOfKind(SpriteKind.bug).indexOf(beetle)] = 3
+    beetle_HP[sprites.allOfKind(SpriteKind.bug).indexOf(beetle)] = 4
     beetle.setFlag(SpriteFlag.BounceOnWall, true)
 }
 function teleport (x: number, y: number) {
@@ -4118,6 +4130,33 @@ function treasureChest () {
         mySprite2.destroy()
     }
 }
+function makeAllBeetles (spawnTile: Image) {
+    tiles.createSpritesOnTiles(spawnTile, SpriteKind.bug)
+    for (let value of sprites.allOfKind(SpriteKind.bug)) {
+        mySprite.setImage(img`
+            .......ffff.......
+            .....ff3333ff.....
+            ....f33113133f....
+            ...f3333333333f...
+            ..f333ffffff333f..
+            ..f1ff333333ff1f..
+            .ffff33333333ffff.
+            .f3f3331133333f3f.
+            .f3f33ffffff33f3f.
+            f331ff333333ff133f
+            f3fff33333333fff3f
+            f3f3f33113333f3f3f
+            .f3f1f333333f1f3f.
+            .f3ffffffffffff3f.
+            ..f1ff331133fff1..
+            ..1ff33ffff33f1f1.
+            ..ff1ff1ff1f1ff1f.
+            ...1ff1f1f1ff1ff..
+            `)
+        value.setFlag(SpriteFlag.BounceOnWall, true)
+        beetle_HP[sprites.allOfKind(SpriteKind.bug).indexOf(value)] = 4
+    }
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Boss, function (sprite, otherSprite) {
     if (tiles.getLoadedMap() == map_field) {
         playerOverlapsGuardianStatue()
@@ -4125,7 +4164,6 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Boss, function (sprite, otherSpr
 })
 let beetle: Sprite = null
 let this_ghost_ready_to_fire = 0
-let i = 0
 let heart: Sprite = null
 let mySprite2: Sprite = null
 let bat: Sprite = null
@@ -4133,6 +4171,7 @@ let money: Sprite = null
 let map_field2: tiles.WorldMap = null
 let map_cave1: tiles.WorldMap = null
 let chestLocation: tiles.Location = null
+let i = 0
 let ghost: Sprite = null
 let delta = 0
 let guardianFlame: Sprite = null
